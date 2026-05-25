@@ -17,30 +17,27 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="fixed bottom-6 right-6 flex items-center gap-3 bg-[var(--chat-primary)] text-white px-6 py-4 rounded-full shadow-lg hover:bg-[var(--chat-primary-hover)] transition-colors group"
-      style={{ boxShadow: "var(--chat-shadow-lg)" }}
+      className="fixed bottom-6 right-6 flex items-center gap-3 text-white px-5 py-3.5 rounded-full transition-colors"
+      style={{
+        background: "#1A56A7",
+        boxShadow: "0 8px 24px rgba(26,86,167,0.45)",
+      }}
     >
-      <MessageCircle className="w-6 h-6" />
-      <span className="font-medium">Чат с поддержкой</span>
+      <MessageCircle className="w-5 h-5 flex-shrink-0" />
+      <span className="font-medium text-sm">Задать вопрос</span>
 
-      {/* Notification badge with pulse animation */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.5 }}
-        className="absolute -top-1 -right-1 w-3 h-3 bg-[var(--chat-green)] rounded-full border-2 border-white"
+        className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white"
+        style={{ background: "#34D399" }}
       >
         <motion.div
-          className="absolute inset-0 rounded-full bg-[var(--chat-green)]"
-          animate={{
-            scale: [1, 1.5, 1.5],
-            opacity: [0.8, 0, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatDelay: 0.5,
-          }}
+          className="absolute inset-0 rounded-full"
+          style={{ background: "#34D399" }}
+          animate={{ scale: [1, 1.8, 1.8], opacity: [0.8, 0, 0] }}
+          transition={{ duration: 2, repeat: Infinity, repeatDelay: 0.5 }}
         />
       </motion.div>
     </motion.button>

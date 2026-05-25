@@ -20,6 +20,24 @@ interface ChatWindowProps {
   onMinimize?: () => void;
 }
 
+const quickReplies = [
+  "Как поступить в колледж",
+  "Расписание занятий",
+  "Какие документы нужны",
+  "Контакты колледжа",
+];
+
+const botResponses: Record<string, string> = {
+  "Как поступить в колледж":
+    "Для поступления в ЛСПК подайте заявление и документы в приёмную комиссию с 20 июня по 15 августа. Принимаем после 9 и 11 классов. Телефон приёмной: +7 (86145) 7-37-21.",
+  "Расписание занятий":
+    "Расписание занятий публикуется на информационных стендах колледжа и в группах в социальных сетях. Telegram-канал: @GAPOUlspk1931. По вопросам расписания звоните: +7 (86145) 7-01-40.",
+  "Какие документы нужны":
+    "Для поступления нужны: заявление о приёме, паспорт (оригинал + копия), аттестат об образовании, медицинская справка 086/у, 6 фотографий 3×4 см.",
+  "Контакты колледжа":
+    "📍 ст. Ленинградская, ул. Красная, 152\n📞 +7 (86145) 7-01-40\n📧 lpk31@mail.ru\n🕐 Пн–Сб: 08:00–19:00",
+};
+
 export function ChatWindow({ isOpen, onClose, onMinimize }: ChatWindowProps) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -28,67 +46,62 @@ export function ChatWindow({ isOpen, onClose, onMinimize }: ChatWindowProps) {
   const [showRating, setShowRating] = useState(false);
   const [userName, setUserName] = useState("");
 
-  const quickReplies = [
-    "Как оформить заказ",
-    "Статус заказа",
-    "Возврат товара",
-    "Доставка",
-  ];
+  const now = () =>
+    new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
 
-  const handleWelcomeSubmit = (data: {
-    name: string;
-    email: string;
-    topic: string;
-  }) => {
+  const addBotMessage = (text: string) => {
+    setMessages((prev: Message[]) => [
+      ...prev,
+      { id: Date.now().toString(), text, isUser: false, time: now() },
+    ]);
+  };
+
+  const handleWelcomeSubmit = (data: { name: string; phone: string; topic: string }) => {
     setUserName(data.name);
     setShowWelcome(false);
 
+    const topicLabels: Record<string, string> = {
+      admission: "приёмной комиссии",
+      schedule: "расписанию занятий",
+      docs: "документам и справкам",
+      payment: "оплате обучения",
+    };
+    const topicHint = data.topic && topicLabels[data.topic]
+      ? ` Вижу, что вас интересует вопрос по ${topicLabels[data.topic]}.`
+      : "";
+
     setTimeout(() => {
-      const welcomeMessage: Message = {
-        id: "1",
-        text: `Здравствуйте, ${data.name}! Спасибо за обращение. Я ваш виртуальный помощник. Чем могу помочь сегодня?`,
-        isUser: false,
-        time: new Date().toLocaleTimeString("ru-RU", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-      setMessages([welcomeMessage]);
+      addBotMessage(
+        `Здравствуйте, ${data.name}! Добро пожаловать в чат поддержки ГАПОУ КК «ЛСПК».${topicHint} Чем могу помочь?`
+      );
       setShowQuickReplies(true);
     }, 300);
   };
 
+  const progressStatus = (msgId: string) => {
+    setTimeout(() => {
+      setMessages((prev: Message[]) =>
+        prev.map((m: Message) => (m.id === msgId ? { ...m, status: "sent" as const } : m))
+      );
+    }, 400);
+    setTimeout(() => {
+      setMessages((prev: Message[]) =>
+        prev.map((m: Message) => (m.id === msgId ? { ...m, status: "delivered" as const } : m))
+      );
+    }, 900);
+    setTimeout(() => {
+      setMessages((prev: Message[]) =>
+        prev.map((m: Message) => (m.id === msgId ? { ...m, status: "read" as const } : m))
+      );
+    }, 2000);
+  };
+
   const handleSend = (text: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      isUser: true,
-      time: new Date().toLocaleTimeString("ru-RU", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      status: "sending",
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
+    const id = Date.now().toString();
+    const newMsg: Message = { id, text, isUser: true, time: now(), status: "sending" };
+    setMessages((prev: Message[]) => [...prev, newMsg]);
     setShowQuickReplies(false);
-
-    setTimeout(() => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === newMessage.id ? { ...msg, status: "sent" as const } : msg
-        )
-      );
-    }, 500);
-
-    setTimeout(() => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === newMessage.id ? { ...msg, status: "delivered" as const } : msg
-        )
-      );
-    }, 1000);
-
+    progressStatus(id);
     simulateResponse(text);
   };
 
@@ -99,83 +112,39 @@ export function ChatWindow({ isOpen, onClose, onMinimize }: ChatWindowProps) {
   const handleClear = () => {
     setMessages([]);
     setShowQuickReplies(false);
-    // Add welcome message again
     setTimeout(() => {
-      const msg: Message = {
-        id: Date.now().toString(),
-        text: `${userName ? userName + ", чат" : "Чат"} очищен. Чем могу помочь?`,
-        isUser: false,
-        time: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-      };
-      setMessages([msg]);
+      addBotMessage(
+        `${userName ? userName + ", ч" : "Ч"}ат очищен. Чем могу помочь?`
+      );
       setShowQuickReplies(true);
     }, 200);
   };
 
-  const handleRateSubmit = (rating: number, comment: string) => {
-    console.log("Rating:", rating, comment);
-    // Add system message about rating
-    const msg: Message = {
-      id: Date.now().toString(),
-      text: `⭐ Вы оценили диалог на ${rating} из 5. Спасибо!`,
-      isUser: false,
-      time: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-    };
-    setMessages((prev) => [...prev, msg]);
+  const handleRateSubmit = (rating: number) => {
+    addBotMessage(`⭐ Спасибо за оценку ${rating} из 5! Рады были помочь.`);
   };
 
   const simulateResponse = (userMessage: string) => {
     setIsTyping(true);
 
     setTimeout(() => {
-      const responses: { [key: string]: string } = {
-        "Как оформить заказ":
-          "Чтобы оформить заказ, добавьте товары в корзину и нажмите 'Оформить заказ'. Я помогу вам на каждом шаге!",
-        "Статус заказа":
-          "Проверить статус заказа можно в личном кабинете в разделе 'Мои заказы'. Если нужна помощь, предоставьте номер заказа.",
-        "Возврат товара":
-          "У вас есть 30 дней для возврата товара. Свяжитесь с нами через форму возврата или опишите проблему здесь.",
-        Доставка:
-          "Мы доставляем по всей России. Стандартная доставка занимает 3-5 рабочих дней. Экспресс-доставка — 1-2 дня.",
-      };
+      setIsTyping(false);
 
-      // Check if message contains emoji or file
-      const isFile = userMessage.startsWith("📎");
-      if (isFile) {
-        const botMessage: Message = {
-          id: Date.now().toString(),
-          text: "Файл получен! Мы его изучим и свяжемся с вами в ближайшее время.",
-          isUser: false,
-          time: new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
-        };
-        setMessages((prev) => [...prev, botMessage]);
-        setIsTyping(false);
+      if (userMessage.startsWith("📎")) {
+        addBotMessage("Файл получен. Специалист свяжется с вами в ближайшее время.");
         return;
       }
 
-      const responseText =
-        responses[userMessage] ||
-        "Спасибо за ваш вопрос! Наш специалист свяжется с вами в течение нескольких минут.";
+      const response =
+        botResponses[userMessage] ||
+        "Спасибо за вопрос! Для подробной консультации обратитесь в приёмную комиссию: +7 (86145) 7-37-21 или напишите на lspk-priem-com@mail.ru.";
 
-      const botMessage: Message = {
-        id: Date.now().toString(),
-        text: responseText,
-        isUser: false,
-        time: new Date().toLocaleTimeString("ru-RU", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
+      addBotMessage(response);
 
-      setMessages((prev) => [...prev, botMessage]);
-      setIsTyping(false);
-
-      if (!responses[userMessage]) {
-        setTimeout(() => {
-          setShowQuickReplies(true);
-        }, 500);
+      if (!botResponses[userMessage]) {
+        setTimeout(() => setShowQuickReplies(true), 400);
       }
-    }, 1500);
+    }, 1400);
   };
 
   if (!isOpen) return null;
@@ -187,8 +156,8 @@ export function ChatWindow({ isOpen, onClose, onMinimize }: ChatWindowProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className="fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[380px] h-full md:h-[620px] bg-white md:rounded-2xl flex flex-col overflow-hidden z-50 relative"
-        style={{ boxShadow: "var(--chat-shadow-lg)" }}
+        className="fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[380px] h-full md:h-[620px] bg-white md:rounded-2xl flex flex-col overflow-hidden z-50"
+        style={{ boxShadow: "0 20px 60px rgba(14,61,122,0.25)" }}
       >
         <ChatHeader
           onClose={onClose}

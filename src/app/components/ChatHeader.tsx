@@ -10,28 +10,34 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ onClose, onMinimize, onRate, onClear }: ChatHeaderProps) {
   return (
-    <div className="bg-white border-b border-[var(--chat-gray-200)] px-6 py-4 flex items-center justify-between">
+    <div className="px-5 py-4 flex items-center justify-between flex-shrink-0" style={{ background: "#0E3D7A" }}>
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-[var(--chat-primary)] flex items-center justify-center text-white font-semibold text-lg">
-          S
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base border-2 flex-shrink-0"
+          style={{ background: "#1A56A7", borderColor: "rgba(255,255,255,0.2)" }}
+        >
+          Л
         </div>
         <div>
-          <h3 className="font-semibold text-[var(--chat-gray-900)]">Поддержка</h3>
-          <div className="flex items-center gap-1.5 text-xs text-[var(--chat-gray-600)]">
-            <div className="w-2 h-2 rounded-full bg-[var(--chat-green)]" />
-            <span>Мы онлайн • Ответим за 30 секунд</span>
+          <h3 className="font-semibold text-white text-sm leading-tight">Поддержка ЛСПК</h3>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <div className="w-2 h-2 rounded-full" style={{ background: "#34D399" }} />
+            <span className="text-xs" style={{ color: "#93C5FD" }}>
+              Онлайн · Ответим в течение дня
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
         {onRate && (
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onRate}
             title="Оценить чат"
-            className="w-8 h-8 rounded-full hover:bg-[var(--chat-gray-100)] flex items-center justify-center text-[var(--chat-gray-500)] transition-colors"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-white/10"
+            style={{ color: "rgba(255,255,255,0.65)" }}
           >
             <Star className="w-4 h-4" />
           </motion.button>
@@ -42,7 +48,8 @@ export function ChatHeader({ onClose, onMinimize, onRate, onClear }: ChatHeaderP
             whileTap={{ scale: 0.9 }}
             onClick={onClear}
             title="Очистить чат"
-            className="w-8 h-8 rounded-full hover:bg-[var(--chat-gray-100)] flex items-center justify-center text-[var(--chat-gray-500)] transition-colors"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-white/10"
+            style={{ color: "rgba(255,255,255,0.65)" }}
           >
             <Trash2 className="w-4 h-4" />
           </motion.button>
@@ -53,7 +60,8 @@ export function ChatHeader({ onClose, onMinimize, onRate, onClear }: ChatHeaderP
             whileTap={{ scale: 0.9 }}
             onClick={onMinimize}
             title="Свернуть"
-            className="w-8 h-8 rounded-full hover:bg-[var(--chat-gray-100)] flex items-center justify-center text-[var(--chat-gray-500)] transition-colors"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-white/10"
+            style={{ color: "rgba(255,255,255,0.65)" }}
           >
             <Minimize2 className="w-4 h-4" />
           </motion.button>
@@ -63,7 +71,8 @@ export function ChatHeader({ onClose, onMinimize, onRate, onClear }: ChatHeaderP
           whileTap={{ scale: 0.9 }}
           onClick={onClose}
           title="Закрыть"
-          className="w-8 h-8 rounded-full hover:bg-[var(--chat-gray-100)] flex items-center justify-center text-[var(--chat-gray-500)] transition-colors"
+          className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-white/10"
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           <X className="w-5 h-5" />
         </motion.button>
