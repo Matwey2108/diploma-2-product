@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { ChatWidget } from "./components/ChatWidget";
+import { RegistrationForm } from "./components/RegistrationForm";
 import {
   GraduationCap, BookOpen, Calendar, FileText, Phone,
-  Mail, MapPin, Award, Clock, ExternalLink, Menu, X, Users,
+  Mail, MapPin, Award, Clock, ExternalLink, Menu, X, Users, ClipboardList,
 } from "lucide-react";
 
 const COLLEGE_NAME = "ГАПОУ КК «ЛСПК»";
@@ -87,7 +88,7 @@ export default function App() {
 
           <div className="flex items-center gap-3">
             <a
-              href="#admission"
+              href="#register"
               className="hidden md:inline-flex text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors hover:opacity-90"
               style={{ background: "#E8A020" }}
             >
@@ -116,7 +117,7 @@ export default function App() {
               </a>
             ))}
             <a
-              href="#admission"
+              href="#register"
               onClick={() => setMenuOpen(false)}
               className="block mt-3 text-white px-4 py-2 rounded-lg text-sm font-semibold text-center"
               style={{ background: "#E8A020" }}
@@ -351,6 +352,32 @@ export default function App() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ───── Онлайн-заявка ───── */}
+      <section id="register" className="py-16" style={{ background: "#F0F5FF" }}>
+        <div className="max-w-3xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <div
+              className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
+              style={{ background: "#1A56A715" }}
+            >
+              <ClipboardList className="w-7 h-7" style={{ color: "#1A56A7" }} />
+            </div>
+            <div className="text-sm font-semibold mb-2 uppercase tracking-wide" style={{ color: "#1A56A7" }}>
+              Поступление онлайн
+            </div>
+            <h2 className="text-3xl font-bold mb-3" style={{ color: "#1A1A2E" }}>
+              Онлайн-заявка на поступление
+            </h2>
+            <p className="text-gray-500 max-w-xl mx-auto">
+              Заполните форму — приёмная комиссия свяжется с вами в течение рабочего дня
+            </p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+            <RegistrationForm />
           </div>
         </div>
       </section>
